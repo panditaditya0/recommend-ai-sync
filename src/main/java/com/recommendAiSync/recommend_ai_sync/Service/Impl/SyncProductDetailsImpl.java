@@ -29,7 +29,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
 
     @Override
     public void DownloadImageByCategory(String categoryName) {
-        ArrayList<ProductDetailsModel> listOfProducts = productDetailsRepo.getListOfProductsByCategory(categoryName);
+        ArrayList<Long> listOfProductIds = productDetailsRepo.getListOfProductsByCategory(categoryName);
 //        int size = listOfProducts.size();
 //        List<List<ProductDetailsModel>> chunkOfProductDetails = Lists.partition(listOfProducts, size/5);
 //        for(int i =0;i< chunkOfProductDetails.size();i++){
@@ -42,24 +42,27 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
 //            productDetailsRepo.saveAll(chunkOfProductDetails.get(i));
 //        }
 
-        int size = listOfProducts.size();
-        List<List<ProductDetailsModel>> chunkOfProductDetails = Lists.partition(listOfProducts, size / 5);
-        LOGGER.info("Number of products = "+size);
-        LOGGER.info("Number of chunks = "+chunkOfProductDetails.size());
+        int size = listOfProductIds.size();
+        List<List<Long>> chunkOfProductDetails = Lists.partition(listOfProductIds, size / 5);
+        LOGGER.info("Number of products = " + size);
+        LOGGER.info("Number of chunks = " + chunkOfProductDetails.size());
 
 
         ExecutorService executor = Executors.newFixedThreadPool(5);
         List<Callable<Void>> tasks = new ArrayList<>();
 
-        for (List<ProductDetailsModel> chunk : chunkOfProductDetails) {
+        for (List<Long> chunk : chunkOfProductDetails) {
             tasks.add(() -> {
-                for (ProductDetailsModel product : chunk) {
+                ArrayList<ProductDetailsModel> a = new ArrayList<>();
+                for (Long productId : chunk) {
+                    ProductDetailsModel product = productDetailsRepo.getById(productId);
                     String imageLink = "https://dimension-six.perniaspopupshop.com/media/catalog/product" + product.image_link;
                     String base64Image = downloadImageAsBase64(imageLink);
                     product.base64Image_original = base64Image;
-                    LOGGER.info("sku -> "+product.sku_id+" download image from " + imageLink);
+                    LOGGER.info("sku -> " + product.sku_id + " download image from " + imageLink);
+                    a.add(product);
                 }
-                productDetailsRepo.saveAll(chunk);
+                productDetailsRepo.saveAll(a);
                 return null;
             });
         }

@@ -9,6 +9,6 @@ import java.util.ArrayList;
 
 @Repository
 public interface ProductDetailsRepo extends JpaRepository<ProductDetailsModel, Long> {
-    @Query(value = "select * from product_details_3 where ?1 =ANY(parent_categories)",  nativeQuery = true)
-    ArrayList<ProductDetailsModel> getListOfProductsByCategory(String categoryName);
+    @Query(value = "select entity_id from product_details_3 where ?1 =ANY(parent_categories)",  nativeQuery = true)
+    ArrayList<Long> getListOfProductsByCategory(String categoryName);
 }
