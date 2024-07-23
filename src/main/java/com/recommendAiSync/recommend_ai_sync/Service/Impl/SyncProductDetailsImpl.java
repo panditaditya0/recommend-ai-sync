@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 @Service
 @RequiredArgsConstructor
 public class SyncProductDetailsImpl implements SyncProductDetailsService {
-    private final String className = "TestImg18";  // Replace with your class name
+    private final String className = "TestImg19";  // Replace with your class name
     private final WeaviateConfig singleWeaviateClient;
     public Logger LOGGER = LoggerFactory.getLogger(SyncProductDetailsImpl.class);
     private final ProductDetailsRepo productDetailsRepo;
