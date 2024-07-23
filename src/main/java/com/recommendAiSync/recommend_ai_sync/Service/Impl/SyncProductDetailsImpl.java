@@ -53,7 +53,6 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
 
         for (List<Long> chunk : chunkOfProductDetails) {
             tasks.add(() -> {
-                ArrayList<ProductDetailsModel> a = new ArrayList<>();
                 for (Long productId : chunk) {
                     try{
                         Thread.sleep(200);
@@ -64,14 +63,12 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                         String imageLink = "https://dimension-six.perniaspopupshop.com/media/catalog/product" + product.image_link;
                         product.base64Image_original = downloadImageAsBase64(imageLink);
                         LOGGER.info("sku -> " + product.sku_id + " download image from " + imageLink);
-
-                        a.add(product);
+                        productDetailsRepo.save(product);
                     } catch (Exception ex){
                         System.out.println("Error in sku "+ productId +"  "+ex.getMessage());
                         LOGGER.info("Error in sku "+ productId +"  "+ex.getMessage());
                     }
                 }
-                productDetailsRepo.saveAll(a);
                 return null;
             });
         }
