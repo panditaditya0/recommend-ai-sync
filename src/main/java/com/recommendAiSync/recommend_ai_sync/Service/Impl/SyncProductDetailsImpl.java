@@ -55,7 +55,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
             tasks.add(() -> {
                 for (Long productId : chunk) {
                     try{
-                        Thread.sleep(200);
+                        Thread.sleep(600);
                         ProductDetailsModel product = productDetailsRepo.getProductById(productId);
                         if(null != product.base64Image_original){
                             continue;
