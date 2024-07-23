@@ -57,7 +57,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                     try{
                         Thread.sleep(200);
                         ProductDetailsModel product = productDetailsRepo.getProductById(productId);
-                        if(product.base64Image_original.length() > 2){
+                        if(null != product.base64Image_original){
                             continue;
                         }
                         String imageLink = "https://dimension-six.perniaspopupshop.com/media/catalog/product" + product.image_link;
