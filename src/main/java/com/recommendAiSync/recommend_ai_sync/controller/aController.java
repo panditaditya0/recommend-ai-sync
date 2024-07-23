@@ -19,4 +19,11 @@ public class aController {
         syncProductDetailsService.DownloadImageByCategory(categoryName);
         return ResponseEntity.ok().build();
     }
+
+    @CrossOrigin
+    @GetMapping("/upload-image/{categoryName}")
+    public ResponseEntity uploadImage(@PathVariable String categoryName) {
+        syncProductDetailsService.uploadImageToVectorDb(categoryName);
+        return ResponseEntity.ok().build();
+    }
 }

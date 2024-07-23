@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public interface ProductDetailsRepo extends JpaRepository<ProductDetailsModel, Long> {
@@ -14,4 +15,7 @@ public interface ProductDetailsRepo extends JpaRepository<ProductDetailsModel, L
 
     @Query(value = "select * from product_details_3 where entity_id = ?1",  nativeQuery = true)
     ProductDetailsModel getProductById(Long categoryName);
+
+    @Query(value = "select * from product_details_3 where entity_id in (?1)",  nativeQuery = true)
+    ArrayList<ProductDetailsModel> getListOfProducts(List<Long> sublist);
 }

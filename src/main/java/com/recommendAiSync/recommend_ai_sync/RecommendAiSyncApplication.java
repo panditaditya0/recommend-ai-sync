@@ -9,5 +9,4 @@ public class RecommendAiSyncApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RecommendAiSyncApplication.class, args);
 	}
-
 }
