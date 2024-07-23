@@ -127,7 +127,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                 properties.put("in_stock",finalObject1.in_stock);
                 properties.put("parent_categories", finalObject1.parent_categories);
                 properties.put("child_categories", finalObject1.child_categories);
-                properties.put("price", finalObject1.price_in);
+                properties.put("price", (float) finalObject1.price_in);
                 dataObjs.add(properties);
             } else {
                 LOGGER.info("No product details found for id " + kafkaPayload.entity_id);
