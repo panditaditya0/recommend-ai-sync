@@ -84,6 +84,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>Recommend-Ai-Sync</finalName>
 	</build>
 
 </project>
