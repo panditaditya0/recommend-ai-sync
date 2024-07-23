@@ -56,14 +56,15 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                 ArrayList<ProductDetailsModel> a = new ArrayList<>();
                 for (Long productId : chunk) {
                     try{
+                        Thread.sleep(200);
                         ProductDetailsModel product = productDetailsRepo.getProductById(productId);
                         if(product.base64Image_original.length() > 2){
                             continue;
                         }
                         String imageLink = "https://dimension-six.perniaspopupshop.com/media/catalog/product" + product.image_link;
-                        String base64Image = downloadImageAsBase64(imageLink);
-                        product.base64Image_original = base64Image;
+                        product.base64Image_original = downloadImageAsBase64(imageLink);
                         LOGGER.info("sku -> " + product.sku_id + " download image from " + imageLink);
+
                         a.add(product);
                     } catch (Exception ex){
                         System.out.println("Error in sku "+ productId +"  "+ex.getMessage());
