@@ -55,7 +55,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
             tasks.add(() -> {
                 ArrayList<ProductDetailsModel> a = new ArrayList<>();
                 for (Long productId : chunk) {
-                    ProductDetailsModel product = productDetailsRepo.getById(productId);
+                    ProductDetailsModel product = productDetailsRepo.getProductById(productId);
                     String imageLink = "https://dimension-six.perniaspopupshop.com/media/catalog/product" + product.image_link;
                     String base64Image = downloadImageAsBase64(imageLink);
                     product.base64Image_original = base64Image;
