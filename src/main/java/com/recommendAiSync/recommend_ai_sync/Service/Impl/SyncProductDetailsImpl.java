@@ -10,9 +10,13 @@ import io.weaviate.client.v1.batch.api.ObjectsBatcher;
 import io.weaviate.client.v1.batch.model.ObjectGetResponse;
 import io.weaviate.client.v1.data.model.WeaviateObject;
 import io.weaviate.client.v1.data.replication.model.ConsistencyLevel;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -23,15 +27,17 @@ import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Scope("prototype")
 public class SyncProductDetailsImpl implements SyncProductDetailsService {
     private final String className = "TestImg19";  // Replace with your class name
     private final WeaviateConfig singleWeaviateClient;
     public Logger LOGGER = LoggerFactory.getLogger(SyncProductDetailsImpl.class);
     private final ProductDetailsRepo productDetailsRepo;
-
+    private final EntityManager entityManager;
     @Override
     public void DownloadImageByCategory(String categoryName) {
         ArrayList<Long> listOfProductIds = productDetailsRepo.getListOfProductsByCategory(categoryName);
@@ -98,13 +104,21 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
         int counter = 0;
         for (List<Long> sublist : chunks) {
             try {
-                ArrayList<ProductDetailsModel> listOfKafkaProducts = productDetailsRepo.getListOfProducts(sublist);
+                Pageable pageable = PageRequest.of(0, 25);
+                ArrayList<ProductDetailsModel> listOfKafkaProducts = productDetailsRepo.getListOfProducts(sublist,pageable);
+                String commaSeparatedIds = listOfKafkaProducts.stream()
+                        .map(product -> String.valueOf(product.getEntity_id()))
+                        .collect(Collectors.joining(","));
+
+                System.out.println(commaSeparatedIds);  // Output: 1,2,3
+                System.out.println(listOfKafkaProducts.size());
                 final List<Map<String, Object>> listOfProps = this.prepareData(listOfKafkaProducts);
                 this.pushToVectorDb(listOfProps);
-                counter += listOfProps.size();
+                listOfKafkaProducts = null;
+                counter += 25;
                 LOGGER.info("Pushed ->  " + counter);
-                System.gc();
                 Thread.sleep(2);
+                entityManager.clear();  // Clear the persistence context to free memory
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }
