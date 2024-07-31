@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -94,6 +95,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
     }
 
     @Override
+    @Transactional
     public void uploadImageToVectorDb(String categoryName) {
         ArrayList<Long> listOfProductIds = productDetailsRepo.getListOfProductsByCategory(categoryName);
         int size = listOfProductIds.size();
@@ -133,6 +135,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                 ProductDetailsModel finalObject1 = (ProductDetailsModel) productDetailsOptional.get();
                 Map<String, Object> properties = new HashMap<>();
                 properties.put("image", finalObject1.base64Image_original);
+                properties.put("name", finalObject1.title);
                 properties.put("sku_id", finalObject1.sku_id);
                 properties.put("product_id", finalObject1.product_id);
                 properties.put("brand", finalObject1.brand);
@@ -141,7 +144,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                 properties.put("in_stock",finalObject1.in_stock);
                 properties.put("parent_categories", finalObject1.parent_categories);
                 properties.put("child_categories", finalObject1.child_categories);
-                properties.put("price", (float) finalObject1.price_in);
+//                properties.put("price", (float) finalObject1.price_in);
                 dataObjs.add(properties);
             } else {
                 LOGGER.info("No product details found for id " + kafkaPayload.entity_id);
@@ -162,7 +165,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                         .build());
             }
             Result<ObjectGetResponse[]> a = batcher
-                    .withConsistencyLevel(ConsistencyLevel.ONE)
+                    .withConsistencyLevel(ConsistencyLevel.QUORUM)
                     .run();
 
             for (ObjectGetResponse b : a.getResult()) {
