@@ -165,7 +165,7 @@ public class SyncProductDetailsImpl implements SyncProductDetailsService {
                         .build());
             }
             Result<ObjectGetResponse[]> a = batcher
-                    .withConsistencyLevel(ConsistencyLevel.QUORUM)
+                    .withConsistencyLevel(ConsistencyLevel.ONE)
                     .run();
 
             for (ObjectGetResponse b : a.getResult()) {
