@@ -18,7 +18,7 @@ public class WeaviateConfig {
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public io.weaviate.client.WeaviateClient weaviateClientMethod() {
         LOGGER.info("CREATING weaviateClientMethod");
-        Config config = new Config("http", "164.92.160.25:8080");
+        Config config = new Config("http", "147.135.253.234:8080");
         io.weaviate.client.WeaviateClient client = new io.weaviate.client.WeaviateClient(config);
         Result<Meta> meta = client.misc().metaGetter().run();
         if (meta.getError() == null) {
